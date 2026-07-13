@@ -59,7 +59,7 @@ const MovementDetailScreen = ({ navigation, route }) => {
     try {
       await Share.share({ message: lines, title: "Comprobante" });
     } catch {
-      
+      /* el usuario canceló el compartir */
     }
   };
 

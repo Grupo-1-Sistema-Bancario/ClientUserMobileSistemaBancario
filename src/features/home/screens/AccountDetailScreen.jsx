@@ -53,12 +53,10 @@ const AccountDetailScreen = ({ navigation, route }) => {
 
   const [typeFilter, setTypeFilter] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [ready, setReady] = useState(false);
 
   const load = useCallback(async () => {
     await fetchAccount(accountId);
     await fetchMovements({ type: typeFilter || undefined, page: 1, pageSize: 50 });
-    setReady(true);
   }, [accountId, fetchAccount, fetchMovements, typeFilter]);
 
   useEffect(() => {
@@ -71,7 +69,7 @@ const AccountDetailScreen = ({ navigation, route }) => {
     setRefreshing(false);
   };
 
-  if (!ready && loading) {
+  if (loading && !account && !refreshing) {
     return <LoadingSpinner fullScreen />;
   }
 

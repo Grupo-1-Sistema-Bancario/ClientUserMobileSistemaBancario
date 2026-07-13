@@ -30,3 +30,5 @@ export const BANK_ROUTES = {
 
   PENDING_ACCOUNT_REQUEST: "/pendingAccounts/account-request",
 };
+
+
