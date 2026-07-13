@@ -3,15 +3,15 @@ import * as SecureStore from "expo-secure-store";
 import { useAuthStore } from "../store/authStore";
 import { ENDPOINTS } from "../constants/endpoints";
 
-const authClient = axios.create({
-  baseURL: ENDPOINTS.AUTH,
+const bankClient = axios.create({
+  baseURL: ENDPOINTS.BANK,
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-authClient.interceptors.request.use(async (config) => {
+bankClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -29,37 +29,23 @@ function processQueue(error, token = null) {
   failedQueue = [];
 }
 
-function isAuthPublicEndpoint(url = "") {
-  return (
-    url.includes("/login") ||
-    url.includes("/register") ||
-    url.includes("/forgot-password") ||
-    url.includes("/reset-password") ||
-    url.includes("/verify-email") ||
-    url.includes("/resend-verification")
-  );
-}
-
-authClient.interceptors.response.use(
+bankClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
     if (!originalRequest) return Promise.reject(error);
 
-    const requestUrl = originalRequest.url || "";
-
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !requestUrl.includes("/refresh-token") &&
-      !isAuthPublicEndpoint(requestUrl)
+      !originalRequest._retry
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then((token) => {
+          originalRequest.headers = originalRequest.headers || {};
           originalRequest.headers.Authorization = `Bearer ${token}`;
-          return authClient(originalRequest);
+          return bankClient(originalRequest);
         });
       }
 
@@ -82,8 +68,9 @@ authClient.interceptors.response.use(
         }
 
         processQueue(null, newAccess);
+        originalRequest.headers = originalRequest.headers || {};
         originalRequest.headers.Authorization = `Bearer ${newAccess}`;
-        return authClient(originalRequest);
+        return bankClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
         try {
@@ -102,4 +89,4 @@ authClient.interceptors.response.use(
   },
 );
 
-export default authClient;
+export default bankClient;
