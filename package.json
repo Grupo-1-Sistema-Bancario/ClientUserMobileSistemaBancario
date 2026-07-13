@@ -1,12 +1,15 @@
 {
-  "name": "client-user",
+  "name": "client-bank",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
+  "private": true,
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
@@ -16,15 +19,26 @@
     "@react-navigation/native-stack": "^7.17.2",
     "axios": "^1.17.0",
     "expo": "~55.0.26",
+    "expo-image-picker": "~55.0.21",
     "expo-secure-store": "~55.0.14",
     "expo-status-bar": "~55.0.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hook-form": "^7.78.0",
     "react-native": "0.83.6",
+    "react-native-reanimated": "^4.2.1",
     "react-native-safe-area-context": "~5.6.2",
-    "react-native-web": "^0.21.0",
+    "react-native-screens": "^4.23.0",
+    "react-native-svg": "15.15.3",
+    "react-native-toast-message": "^2.4.0",
+    "react-native-web": "~0.21.0",
     "zustand": "^5.0.14"
   },
-  "private": true
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.5.0"
+  }
 }
