@@ -108,3 +108,13 @@ export const LETTER_SPACING = {
   wide: 1.5,
   ultra: 4,
 };
+
+export const GRADIENTS = {
+    card: ["#120A24", "#25154D", "#3D1E71"],
+    button: ["#00BFA5", "#009688"],
+    buttonAlt: ["#D81B60", "#C2185B"],
+    // CTA principal del web: fucsia -> púrpura
+    primary: ["#D81B60", "#7B2FBE"],
+    // botón de login del web: púrpura
+    violet: ["#7B3FEC", "#5A2EAC"],
+};

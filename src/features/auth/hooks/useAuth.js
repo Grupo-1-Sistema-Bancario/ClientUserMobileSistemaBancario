@@ -33,6 +33,7 @@ export const useAuth = () => {
         }
 
         await login(accessToken, userDetails, refreshToken);
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
         if (userDetails?.role === "USER_ROLE") {
           try {

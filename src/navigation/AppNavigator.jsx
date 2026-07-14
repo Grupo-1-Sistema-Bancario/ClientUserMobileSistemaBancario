@@ -2,7 +2,7 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { COLORS } from "../shared/constants/theme";
 import AuthStack from "./AuthStack";
-import MainTabs from "./MainTabs";
+import AppStack from "./AppStack";
 import { useAuthStore } from "../shared/store/authStore";
 
 const navTheme = {
@@ -32,7 +32,7 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer theme={navTheme}>
-      {isAuthenticated ? <MainTabs /> : <AuthStack />}
+      {isAuthenticated ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );
 };

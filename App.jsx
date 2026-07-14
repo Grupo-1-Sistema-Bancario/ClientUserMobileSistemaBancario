@@ -1,32 +1,23 @@
-// App.jsx
-import { View, StyleSheet } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import AppNavigator from "./src/navigation/AppNavigator";
-import CosmicBackground from "./src/shared/components/layout/CosmicBackground";
-import { COLORS } from "./src/shared/constants/theme";
+import Toast from 'react-native-toast-message';
+import CosmicBackground from './src/shared/components/layout/CosmicBackground';
+import AppNavigator from './src/navigation/AppNavigator';
+import { COLORS } from './src/shared/constants/theme';
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <View style={styles.root}>
-        <CosmicBackground />
-        <View style={styles.content}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <View style={{ flex: 1, backgroundColor: COLORS.spaceBg }}>
+          <CosmicBackground />
           <AppNavigator />
+          <Toast position="top" />
         </View>
         <StatusBar style="light" />
-      </View>
-    </SafeAreaProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: COLORS.spaceBg,
-  },
-  content: {
-    flex: 1,
-    zIndex: 1,
-  },
-});

@@ -30,7 +30,8 @@
         {
           "photosPermission": "Astra Bank necesita acceso a tus fotos para la imagen de perfil."
         }
-      ]
+      ],
+      "expo-font"
     ]
   }
 }
