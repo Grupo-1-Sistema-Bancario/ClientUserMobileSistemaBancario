@@ -15,11 +15,10 @@ export default function App() {
         <View style={{ flex: 1, backgroundColor: COLORS.spaceBg }}>
           <CosmicBackground />
           <AppNavigator />
-          <Toast position="top" />
         </View>
         <StatusBar style="light" />
-        <Toast config={toastConfig} />
-      </View>
-    </SafeAreaProvider>
+        <Toast position="top" config={toastConfig} />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

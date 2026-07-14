@@ -12,9 +12,11 @@
       "backgroundColor": "#0D0A14"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.grupo1sistemabancario.clientbank"
     },
     "android": {
+      "package": "com.grupo1sistemabancario.clientbank",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#0D0A14"
