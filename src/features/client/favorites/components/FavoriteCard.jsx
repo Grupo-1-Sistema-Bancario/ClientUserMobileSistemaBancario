@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     alias: {
         fontSize: FONT_SIZE.xl,
         fontWeight: "700",
-        color: COLORS.surface,
+        color: COLORS.text,
     },
     avatar: {
         width: 44,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     avatarText: {
         fontSize: FONT_SIZE.sm,
         fontWeight: "700",
-        color: COLORS.surface,
+        color: COLORS.text,
         letterSpacing: 1,
     },
     accountSection: {
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
         fontFamily: "monospace",
         fontSize: FONT_SIZE.lg,
         fontWeight: "600",
-        color: COLORS.surface,
+        color: COLORS.text,
         letterSpacing: 1,
     },
     bankLabel: {
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     actionButtonText: {
-        color: COLORS.surface,
+        color: COLORS.text,
         fontWeight: "600",
         fontSize: FONT_SIZE.sm,
     },
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     actionButtonOutlineText: {
-        color: COLORS.surface,
+        color: COLORS.text,
         fontWeight: "600",
         fontSize: FONT_SIZE.sm,
     },
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     actionButtonDangerText: {
-        color: COLORS.surface,
+        color: COLORS.text,
         fontWeight: "600",
         fontSize: FONT_SIZE.sm,
     },

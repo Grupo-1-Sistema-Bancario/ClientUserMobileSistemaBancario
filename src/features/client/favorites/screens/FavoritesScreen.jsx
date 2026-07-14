@@ -45,8 +45,11 @@ const FavoritesScreen = () => {
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
+    // Solo al montar. NO poner loadFavorites en deps: es una función nueva en
+    // cada render y provocaría un bucle infinito de fetch/render (congelamiento).
     loadFavorites();
-  }, [loadFavorites]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCardPress = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));

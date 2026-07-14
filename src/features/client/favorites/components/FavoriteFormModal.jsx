@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useForm, Controller } from "react-hook-form";
 import {
   COLORS,
@@ -60,12 +61,9 @@ const FavoriteFormModal = ({
         <Text style={styles.title}>
           {isEdit ? "Modificar favorito" : "Agregar favorito"}
         </Text>
-        <Button
-          title="✕"
-          variant="secondary"
-          onPress={onClose}
-          style={styles.closeButton}
-        />
+        <TouchableOpacity onPress={onClose} hitSlop={12} style={styles.closeButton}>
+          <MaterialIcons name="close" size={22} color={COLORS.primary} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -122,13 +120,16 @@ const FavoriteFormModal = ({
         </KeyboardAvoidingView>
 
         <View style={styles.buttonRow}>
-          <Button title="Cancelar" variant="secondary" onPress={onClose} />
-          <Button
-            title={loading ? "Guardando..." : isEdit ? "Actualizar" : "Guardar"}
-            onPress={handleSubmit(onFormSubmit)}
-            loading={loading}
-            style={styles.primaryButton}
-          />
+          <View style={styles.buttonHalf}>
+            <Button title="Cancelar" variant="secondary" onPress={onClose} />
+          </View>
+          <View style={styles.buttonHalf}>
+            <Button
+              title={loading ? "Guardando..." : isEdit ? "Actualizar" : "Guardar"}
+              onPress={handleSubmit(onFormSubmit)}
+              loading={loading}
+            />
+          </View>
         </View>
       </ScrollView>
     </ModalWrapper>
@@ -153,8 +154,14 @@ const styles = StyleSheet.create({
     letterSpacing: LETTER_SPACING.wide,
   },
   closeButton: {
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.06)",
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   form: {
     maxHeight: 400,
@@ -169,7 +176,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingBottom: SPACING.md,
   },
-  primaryButton: {
+  buttonHalf: {
     flex: 1,
   },
 });
