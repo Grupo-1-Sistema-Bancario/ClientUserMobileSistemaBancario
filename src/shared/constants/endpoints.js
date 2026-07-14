@@ -22,6 +22,7 @@ export const BANK_ROUTES = {
 
   FAVORITES: "/favorites",
   FAVORITES_TRANSFER: "/favorites/transfer",
+  FAVORITES_CHECK: "/favorites/check",
 
   PRODUCTS: "/products/get",
   PRODUCTS_CURRENCIES: "/products/get/currencies",

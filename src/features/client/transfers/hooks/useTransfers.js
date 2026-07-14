@@ -2,7 +2,8 @@ import Toast from "react-native-toast-message";
 import { useTransferStore } from "../store/useTransferStore";
 
 export const useTransfers = () => {
-  const { loading, makeTransfer } = useTransferStore();
+  const { loading, lookupLoading, makeTransfer, checkAccountNumber } =
+    useTransferStore();
 
   const handleTransfer = async (formData, onSuccess) => {
     const result = await makeTransfer({
@@ -25,5 +26,15 @@ export const useTransfers = () => {
     }
   };
 
-  return { loading, handleTransfer };
+  const handleCheckAccountNumber = async (accountNumber, onSuccess) => {
+    const result = await checkAccountNumber(accountNumber);
+    if (result.success) {
+      onSuccess?.(result.account);
+    } else {
+      Toast.show({ type: "error", text1: "Error", text2: result.error });
+    }
+    return result;
+  };
+
+  return { loading, lookupLoading, handleTransfer, handleCheckAccountNumber };
 };

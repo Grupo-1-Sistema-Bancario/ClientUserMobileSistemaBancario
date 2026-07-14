@@ -1,14 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
 import ScreenHeader from "../../../../shared/components/layout/ScreenHeader";
-import { EmptyState, formatCurrency } from "../../../../shared/components/common/Common";
+import {
+  Card,
+  EmptyState,
+  LoadingSpinner,
+  formatCurrency,
+  maskAccountNumber,
+} from "../../../../shared/components/common/Common";
 import {
   COLORS,
   SPACING,
@@ -16,7 +24,7 @@ import {
   BORDER_RADIUS,
   LETTER_SPACING,
 } from "../../../../shared/constants/theme";
-import { useHistoryStore } from "../store/useHistoryStore";
+import { useAccounts } from "../../../home/hooks/useAccounts";
 
 const typeLabel = {
   DEPOSIT: "Depósito",
@@ -24,57 +32,110 @@ const typeLabel = {
   PAYMENT: "Pago",
 };
 
+const FILTERS = [
+  { key: null, label: "Todos" },
+  { key: "DEPOSIT", label: "Depósito" },
+  { key: "TRANSFER", label: "Transfer." },
+  { key: "PAYMENT", label: "Pago" },
+];
+
 const HistoryScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
-  const { transactions, loading, fetchMyTransactions } = useHistoryStore();
+  const { movements, loading, error, fetchMovements } = useAccounts();
+  const [typeFilter, setTypeFilter] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const load = async (filter) => {
+    await fetchMovements({ type: filter || undefined, page: 1, pageSize: 50 });
+  };
 
   useEffect(() => {
-    fetchMyTransactions();
-  }, []);
+    load(typeFilter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeFilter]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await load(typeFilter);
+    setRefreshing(false);
+  };
 
   const renderItem = ({ item }) => {
     const reversed = item.status === "REVERSED";
+    const counterpartyNumber = item.isIncoming
+      ? item.accountFrom?.accountNumber
+      : item.accountTo?.accountNumber;
+
     return (
-      <View style={styles.card}>
-        <View style={styles.topRow}>
-          <Text style={styles.type}>
-            {typeLabel[item.type] || item.type}
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={() => navigation.navigate("MovementDetail", { movement: item })}
+      >
+        <Card style={styles.card}>
+          <View style={styles.topRow}>
+            <View style={styles.typeRow}>
+              <View
+                style={[
+                  styles.dirIcon,
+                  {
+                    backgroundColor: item.isIncoming
+                      ? COLORS.successSoft
+                      : COLORS.errorSoft,
+                  },
+                ]}
+              >
+                <MaterialIcons
+                  name={item.isIncoming ? "arrow-downward" : "arrow-upward"}
+                  size={16}
+                  color={item.isIncoming ? COLORS.success : COLORS.error}
+                />
+              </View>
+              <Text style={styles.type}>
+                {typeLabel[item.type] || item.type}
+              </Text>
+            </View>
+            {reversed ? (
+              <View style={styles.badgeBad}>
+                <Text style={styles.badgeTextBad}>REVERTIDO</Text>
+              </View>
+            ) : null}
+          </View>
+
+          <Text style={styles.date}>
+            {item.createdAt
+              ? new Date(item.createdAt).toLocaleString("es-GT")
+              : "—"}
           </Text>
-          <View
-            style={[styles.badge, reversed ? styles.badgeBad : styles.badgeOk]}
-          >
-            <Text
-              style={[
-                styles.badgeText,
-                reversed ? styles.badgeTextBad : styles.badgeTextOk,
-              ]}
-            >
-              {item.status || "COMPLETED"}
-            </Text>
-          </View>
-        </View>
 
-        <Text style={styles.date}>
-          {new Date(item.date || item.createdAt).toLocaleString("es-GT")}
-        </Text>
+          <Text style={styles.description} numberOfLines={2}>
+            {item.description || "Transacción procesada correctamente"}
+          </Text>
 
-        <Text style={styles.description} numberOfLines={2}>
-          {item.description || "Transacción procesada correctamente"}
-        </Text>
-
-        <View style={styles.bottomRow}>
-          <View>
-            <Text style={styles.refLabel}>Ref ID</Text>
-            <Text style={styles.refValue}>
-              {item._id ? String(item._id).substring(0, 8) : "—"}
-            </Text>
+          <View style={styles.bottomRow}>
+            <View style={styles.flex1}>
+              <Text style={styles.refLabel}>
+                {item.isIncoming ? "De la cuenta" : "A la cuenta"}
+              </Text>
+              <Text style={styles.refValue}>
+                {counterpartyNumber
+                  ? maskAccountNumber(counterpartyNumber)
+                  : "—"}
+              </Text>
+            </View>
+            <View style={styles.amountCol}>
+              <Text style={styles.refLabel}>Monto</Text>
+              <Text
+                style={[
+                  styles.amount,
+                  { color: item.isIncoming ? COLORS.success : COLORS.error },
+                ]}
+              >
+                {`${item.isIncoming ? "+" : "-"} ${formatCurrency(item.amount)}`}
+              </Text>
+            </View>
           </View>
-          <View style={styles.amountCol}>
-            <Text style={styles.refLabel}>Monto</Text>
-            <Text style={styles.amount}>{formatCurrency(item.amount)}</Text>
-          </View>
-        </View>
-      </View>
+        </Card>
+      </TouchableOpacity>
     );
   };
 
@@ -85,29 +146,54 @@ const HistoryScreen = ({ navigation }) => {
         title="Historial"
         subtitle="Registro de transacciones"
       />
-      <FlatList
-        data={transactions}
-        keyExtractor={(item, index) => item._id || String(index)}
-        renderItem={renderItem}
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: insets.bottom + SPACING.xl },
-        ]}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          !loading ? (
-            <EmptyState message="Aún no tienes transacciones registradas." />
-          ) : null
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={fetchMyTransactions}
-            tintColor={COLORS.primary}
-            colors={[COLORS.primary]}
-          />
-        }
-      />
+
+      <View style={styles.filters}>
+        {FILTERS.map((f) => {
+          const active = typeFilter === f.key;
+          return (
+            <TouchableOpacity
+              key={String(f.key)}
+              style={[styles.chip, active && styles.chipActive]}
+              onPress={() => setTypeFilter(f.key)}
+            >
+              <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                {f.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {loading && movements.length === 0 && !refreshing ? (
+        <LoadingSpinner />
+      ) : (
+        <FlatList
+          data={movements}
+          keyExtractor={(item, index) => String(item.id || index)}
+          renderItem={renderItem}
+          contentContainerStyle={[
+            styles.content,
+            { paddingBottom: insets.bottom + SPACING.xl },
+          ]}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            !loading ? (
+              <EmptyState message="No hay movimientos con estos filtros." />
+            ) : null
+          }
+          ListHeaderComponent={
+            error ? <Text style={styles.errorText}>{error}</Text> : null
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={COLORS.primary}
+              colors={[COLORS.primary]}
+            />
+          }
+        />
+      )}
     </View>
   );
 };
@@ -115,12 +201,39 @@ const HistoryScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   flex: { flex: 1, backgroundColor: "transparent" },
   content: { paddingHorizontal: SPACING.md },
-  card: {
-    backgroundColor: COLORS.surface,
+  flex1: { flex: 1 },
+  filters: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    marginBottom: SPACING.md,
+  },
+  chip: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.pill,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.lg,
+    backgroundColor: COLORS.surface,
+  },
+  chipActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  chipText: {
+    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.xs,
+    fontWeight: "600",
+  },
+  chipTextActive: {
+    color: COLORS.text,
+  },
+  errorText: {
+    color: COLORS.error,
+    marginBottom: SPACING.sm,
+  },
+  card: {
     marginBottom: SPACING.md,
   },
   topRow: {
@@ -128,30 +241,38 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  typeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+  },
+  dirIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: BORDER_RADIUS.pill,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   type: {
     color: COLORS.text,
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.md,
     fontWeight: "800",
     textTransform: "uppercase",
   },
-  badge: {
+  badgeBad: {
     paddingHorizontal: SPACING.sm,
     paddingVertical: 2,
     borderRadius: BORDER_RADIUS.pill,
     borderWidth: 1,
+    backgroundColor: COLORS.errorSoft,
+    borderColor: COLORS.error,
   },
-  badgeOk: {
-    backgroundColor: COLORS.successSoft,
-    borderColor: COLORS.success,
-  },
-  badgeBad: { backgroundColor: COLORS.errorSoft, borderColor: COLORS.error },
-  badgeText: {
+  badgeTextBad: {
+    color: COLORS.error,
     fontSize: 10,
     fontWeight: "800",
     textTransform: "uppercase",
   },
-  badgeTextOk: { color: COLORS.success },
-  badgeTextBad: { color: COLORS.error },
   date: {
     color: COLORS.cyanDeep,
     fontSize: FONT_SIZE.xs,
@@ -189,7 +310,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.xs,
   },
   amount: {
-    color: COLORS.fuchsiaGlow,
     fontSize: FONT_SIZE.xxl,
     fontWeight: "900",
   },
