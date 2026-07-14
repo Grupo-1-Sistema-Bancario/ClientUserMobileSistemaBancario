@@ -160,26 +160,26 @@ const TransfersScreen = ({ navigation }) => {
                 />
               </View>
               <View style={styles.destinationInfo}>
-                <Text style={styles.destLabel}>
-                  {verifiedAccount.isFavorite
-                    ? "Cuenta guardada en favoritos"
-                    : "Número de cuenta destino"}
-                </Text>
-                {verifiedAccount.isFavorite && (
-                  <Text style={styles.destName}>
-                    {verifiedAccount.alias || "Sin alias"}
-                  </Text>
-                )}
+                <Text style={styles.destLabel}>Titular de la cuenta</Text>
+                <Text style={styles.destName}>{verifiedAccount.ownerName}</Text>
                 <Text style={styles.destNumber}>
                   {verifiedAccount.accountNumber}
                 </Text>
+                {verifiedAccount.isFavorite && (
+                  <View style={styles.favoriteBadge}>
+                    <MaterialIcons name="star" size={12} color={COLORS.fuchsiaGlow} />
+                    <Text style={styles.favoriteBadgeText}>
+                      {verifiedAccount.alias || "En tus favoritos"}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
 
             <Notice
               icon="verified-user"
               title="¿Es esta la cuenta?"
-              text="Verifica que el número de cuenta corresponda al destinatario antes de continuar. La transferencia se procesa de inmediato."
+              text="Verifica que el nombre y el número de cuenta correspondan al destinatario antes de continuar. La transferencia se procesa de inmediato."
             />
 
             <View style={styles.buttonRow}>
@@ -203,11 +203,7 @@ const TransfersScreen = ({ navigation }) => {
 
             <View style={styles.destinationCardSmall}>
               <Text style={styles.destLabel}>Destino</Text>
-              {verifiedAccount.isFavorite && (
-                <Text style={styles.destName}>
-                  {verifiedAccount.alias || "Sin alias"}
-                </Text>
-              )}
+              <Text style={styles.destName}>{verifiedAccount.ownerName}</Text>
               <Text style={styles.destNumber}>
                 {verifiedAccount.accountNumber}
               </Text>
@@ -372,6 +368,17 @@ const styles = StyleSheet.create({
     fontFamily: "monospace",
     fontSize: FONT_SIZE.sm,
     color: GRADIENTS.button[0],
+    fontWeight: "600",
+  },
+  favoriteBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: SPACING.xs,
+  },
+  favoriteBadgeText: {
+    color: COLORS.fuchsiaGlow,
+    fontSize: FONT_SIZE.xs,
     fontWeight: "600",
   },
   changeLink: {

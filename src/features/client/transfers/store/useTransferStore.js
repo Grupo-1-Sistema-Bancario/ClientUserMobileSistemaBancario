@@ -24,15 +24,32 @@ export const useTransferStore = create((set) => ({
   checkAccountNumber: async (accountNumber) => {
     try {
       set({ lookupLoading: true, error: null });
-      const response = await bankClient.get(
-        `${BANK_ROUTES.FAVORITES_CHECK}/${accountNumber}`,
-      );
-      const favorite = response.data?.data || null;
+
+      const [lookupResult, favoriteResult] = await Promise.allSettled([
+        bankClient.get(`${BANK_ROUTES.ACCOUNTS_LOOKUP}/${accountNumber}`),
+        bankClient.get(`${BANK_ROUTES.FAVORITES_CHECK}/${accountNumber}`),
+      ]);
+
+      if (lookupResult.status === "rejected") {
+        const msg =
+          lookupResult.reason?.response?.data?.message ||
+          "No se pudo verificar la cuenta";
+        set({ lookupLoading: false, error: msg });
+        return { success: false, error: msg };
+      }
+
+      const ownerName = lookupResult.value.data?.data?.ownerName || null;
+      const favorite =
+        favoriteResult.status === "fulfilled"
+          ? favoriteResult.value.data?.data || null
+          : null;
+
       set({ lookupLoading: false });
       return {
         success: true,
         account: {
           accountNumber,
+          ownerName,
           alias: favorite?.alias || null,
           isFavorite: !!favorite,
         },

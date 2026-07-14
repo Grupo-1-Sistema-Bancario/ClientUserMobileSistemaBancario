@@ -102,8 +102,9 @@ export const useFavoriteStore = create((set) => ({
   transferToFavorite: async ({ accountNumberTo, amount, description }) => {
     try {
       set({ loading: true, error: null });
-      await bankClient.post(BANK_ROUTES.FAVORITES_TRANSFER, {
+      await bankClient.post(BANK_ROUTES.TRANSACTIONS_TRANSFER, {
         accountNumberTo,
+        type: "TRANSFER",
         amount,
         description,
       });

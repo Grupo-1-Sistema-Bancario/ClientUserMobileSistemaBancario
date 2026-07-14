@@ -12,6 +12,7 @@ export const BANK_ROUTES = {
   ACCOUNTS: "/accounts",
   MY_ACCOUNT: "/accounts/my-account",
   MY_ACCOUNT_CURRENCIES: "/accounts/my-account/currencies",
+  ACCOUNTS_LOOKUP: "/accounts/lookup",
 
   TRANSACTIONS_HISTORY: "/transactions/history",
   TRANSACTIONS_TRANSFER: "/transactions/transfer",
