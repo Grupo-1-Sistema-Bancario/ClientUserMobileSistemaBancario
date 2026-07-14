@@ -9,6 +9,8 @@ import HomeScreen from "../features/home/screens/HomeScreen";
 import AccountDetailScreen from "../features/home/screens/AccountDetailScreen";
 import MovementDetailScreen from "../features/home/screens/MovementDetailScreen";
 import ProfileScreen from "../features/profile/screens/ProfileScreen";
+import CatalogScreen from "../features/catalog/screens/CatalogScreen";
+import PaymentsScreen from "../features/payments/screens/PaymentsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -48,9 +50,7 @@ const TransfersStack = () => (
 
 const CatalogStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen name="CatalogScreen">
-      {() => <PlaceholderScreen title="Ver catálogo" />}
-    </Stack.Screen>
+    <Stack.Screen name="CatalogScreen" component={CatalogScreen} />
   </Stack.Navigator>
 );
 
@@ -64,15 +64,7 @@ const HistoryStack = () => (
 
 const PaymentsStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen name="PaymentsScreen">
-      {() => <PlaceholderScreen title="Pagos de servicios" />}
-    </Stack.Screen>
-    <Stack.Screen name="NewPayment">
-      {() => <PlaceholderScreen title="Nuevo pago" />}
-    </Stack.Screen>
-    <Stack.Screen name="PaymentDetail">
-      {() => <PlaceholderScreen title="Detalle de pago" />}
-    </Stack.Screen>
+    <Stack.Screen name="PaymentsScreen" component={PaymentsScreen} />
   </Stack.Navigator>
 );
 

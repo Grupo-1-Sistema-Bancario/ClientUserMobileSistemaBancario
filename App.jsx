@@ -2,8 +2,10 @@
 import { View, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import AppNavigator from "./src/navigation/AppNavigator";
 import CosmicBackground from "./src/shared/components/layout/CosmicBackground";
+import { toastConfig } from "./src/shared/components/ToastConfig";
 import { COLORS } from "./src/shared/constants/theme";
 
 export default function App() {
@@ -15,6 +17,7 @@ export default function App() {
           <AppNavigator />
         </View>
         <StatusBar style="light" />
+        <Toast config={toastConfig} />
       </View>
     </SafeAreaProvider>
   );
