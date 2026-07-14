@@ -3,12 +3,18 @@ import authClient from "../../../shared/api/authClient.js";
 import bankClient from "../../../shared/api/bankClient.js";
 import { BANK_ROUTES } from "../../../shared/constants/endpoints.js";
 import { useAuthStore } from "../../../shared/store/authStore.js";
+import { useAccountStore } from "../../../shared/store/accountStore.js";
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const login = useAuthStore((state) => state.login);
-  const logout = useAuthStore((state) => state.logout);
+  const authLogout = useAuthStore((state) => state.logout);
+
+  const logout = useCallback(async () => {
+    await authLogout();
+    useAccountStore.getState().reset();
+  }, [authLogout]);
 
   const clearError = useCallback(() => setError(null), []);
 

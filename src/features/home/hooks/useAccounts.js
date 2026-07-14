@@ -1,27 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import bankClient from "../../../shared/api/bankClient";
 import { BANK_ROUTES } from "../../../shared/constants/endpoints";
-
-const mapAccount = (raw) => {
-  if (!raw) return null;
-  return {
-    id: raw._id || raw.id,
-    alias: raw.alias || "Cuenta principal",
-    type: raw.type || "MONETARIA",
-    accountNumber: raw.accountNumber,
-    balance: Number(raw.balance) || 0,
-    currency: raw.currency || "GTQ",
-    isActive: raw.isActive !== false,
-    loyaltyPoints: raw.loyaltyPoints ?? 0,
-    phone: raw.phone || null,
-    address: raw.address || null,
-    jobName: raw.jobName || null,
-    monthlyIncome:
-      raw.monthlyIncome != null ? Number(raw.monthlyIncome) : null,
-    dpi: raw.dpi || null,
-    raw,
-  };
-};
+import { useAccountStore } from "../../../shared/store/accountStore";
 
 const mapMovement = (tx, myAccountId) => {
   const fromId =
@@ -50,53 +30,34 @@ const mapMovement = (tx, myAccountId) => {
 };
 
 export const useAccounts = () => {
-  const [accounts, setAccounts] = useState([]);
-  const [account, setAccount] = useState(null);
+  const account = useAccountStore((s) => s.account);
+  const accountLoading = useAccountStore((s) => s.loading);
+  const accountError = useAccountStore((s) => s.error);
+  const fetchAccountFromStore = useAccountStore((s) => s.fetchAccount);
+
   const [movements, setMovements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const myAccountIdRef = useRef(null);
 
+  useEffect(() => {
+    myAccountIdRef.current = account?.id || null;
+  }, [account]);
+
+  const accounts = account ? [account] : [];
+
   const fetchAccounts = useCallback(async () => {
-    try {
-      setError(null);
-      const response = await bankClient.get(BANK_ROUTES.MY_ACCOUNT);
-      const data = response.data?.data || response.data;
-      const mapped = mapAccount(data);
-      const list = mapped ? [mapped] : [];
-      setAccounts(list);
-      setAccount(mapped);
-      myAccountIdRef.current = mapped?.id || null;
-      return list;
-    } catch (err) {
-      const message =
-        err.response?.data?.message || "Error al cargar la cuenta";
-      setError(message);
-      setAccounts([]);
-      setAccount(null);
-      myAccountIdRef.current = null;
-      return [];
-    }
-  }, []);
+    const result = await fetchAccountFromStore();
+    return result.success && result.data ? [result.data] : [];
+  }, [fetchAccountFromStore]);
 
   const fetchAccount = useCallback(
     async (id) => {
-      try {
-        setError(null);
-        let list = accounts;
-        if (!list.length) {
-          list = await fetchAccounts();
-        }
-        const found = list.find((a) => String(a.id) === String(id)) || list[0];
-        setAccount(found || null);
-        if (found?.id) myAccountIdRef.current = found.id;
-        return found;
-      } catch (err) {
-        const message =
-          err.response?.data?.message || "Error al cargar el detalle";
-        setError(message);
-        return null;
+      let list = accounts;
+      if (!list.length) {
+        list = await fetchAccounts();
       }
+      return list.find((a) => String(a.id) === String(id)) || list[0] || null;
     },
     [accounts, fetchAccounts],
   );
@@ -166,8 +127,8 @@ export const useAccounts = () => {
     accounts,
     account,
     movements,
-    loading,
-    error,
+    loading: loading || accountLoading,
+    error: error || accountError,
     totalBalance,
     fetchAccounts,
     fetchAccount,
