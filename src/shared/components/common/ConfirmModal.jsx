@@ -38,7 +38,7 @@ const ConfirmModal = ({
       onRequestClose={onCancel}
     >
       <Pressable style={styles.backdrop} onPress={loading ? undefined : onCancel}>
-        <Pressable style={styles.card} onPress={(e) => e.stopPropagation()}>
+        <Pressable style={styles.card} onPress={() => {}}>
           <View style={styles.accentBar} />
 
           <View style={styles.iconWrap}>

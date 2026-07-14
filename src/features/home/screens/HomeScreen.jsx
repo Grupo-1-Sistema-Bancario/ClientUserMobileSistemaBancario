@@ -114,6 +114,7 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <Card style={styles.balanceCard}>
+        <View style={styles.balanceOrb} pointerEvents="none" />
         <Text style={styles.balanceLabel}>Saldo disponible</Text>
         <CurrencyText
           amount={totalBalance}
@@ -267,8 +268,19 @@ const styles = StyleSheet.create({
     padding: SPACING.sm,
   },
   balanceCard: {
-    paddingVertical: SPACING.lg,
+    paddingVertical: SPACING.xl,
     marginBottom: SPACING.md,
+    overflow: "hidden",
+    position: "relative",
+  },
+  balanceOrb: {
+    position: "absolute",
+    top: -70,
+    right: -50,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: "rgba(216, 27, 96, 0.18)",
   },
   balanceLabel: {
     color: COLORS.textTertiary,
@@ -276,8 +288,12 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   balanceValue: {
-    fontSize: FONT_SIZE.huge,
+    fontSize: 46,
     fontWeight: "900",
+    letterSpacing: -1,
+    textShadowColor: "rgba(0, 191, 165, 0.35)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 18,
   },
   accountNumberRow: {
     marginTop: SPACING.md,

@@ -1,13 +1,9 @@
-import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "../shared/constants/theme";
-import PlaceholderScreen from "../shared/components/common/PlaceholderScreen";
-
-import HomeScreen from "../features/home/screens/HomeScreen";
-import AccountDetailScreen from "../features/home/screens/AccountDetailScreen";
-import MovementDetailScreen from "../features/home/screens/MovementDetailScreen";
+import HomeStack from "./HomeStack";
+import FavoritesScreen from "../features/client/favorites/screens/FavoritesScreen";
 import ProfileScreen from "../features/profile/screens/ProfileScreen";
 import CatalogScreen from "../features/catalog/screens/CatalogScreen";
 import PaymentsScreen from "../features/payments/screens/PaymentsScreen";
@@ -69,79 +65,52 @@ const PaymentsStack = () => (
 );
 
 const TAB_ICONS = {
-  Inicio: "home",
-  Transferencias: "swap-horiz",
-  Catálogo: "storefront",
-  Historial: "history",
-  Pagos: "receipt-long",
-  Perfil: "person",
+    Inicio: "home",
+    Favorites: "star",
+    Profile: "person",
 };
 
 const MainTabs = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.secondary,
-        tabBarStyle: {
-          backgroundColor: COLORS.surface,
-          borderTopWidth: 1,
-          borderTopColor: COLORS.border,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 4,
-        },
-        sceneStyle: {
-          backgroundColor: "transparent",
-        },
-        tabBarIcon: ({ color, size }) => (
-          <MaterialIcons
-            name={TAB_ICONS[route.name] || "circle"}
-            size={size}
-            color={color}
-          />
-        ),
-      })}
-    >
-      <Tab.Screen
-        name="Inicio"
-        component={HomeStack}
-        options={{ title: "Inicio" }}
-      />
-      <Tab.Screen
-        name="Transferencias"
-        component={TransfersStack}
-        options={{ title: "Transferencias" }}
-      />
-      <Tab.Screen
-        name="Catálogo"
-        component={CatalogStack}
-        options={{ title: "Catálogo" }}
-      />
-      <Tab.Screen
-        name="Historial"
-        component={HistoryStack}
-        options={{ title: "Historial" }}
-      />
-      <Tab.Screen
-        name="Pagos"
-        component={PaymentsStack}
-        options={{ title: "Pagos" }}
-      />
-      <Tab.Screen
-        name="Perfil"
-        component={ProfileScreen}
-        options={{
-          title: "Perfil",
-          headerShown: true,
-          headerStyle: { backgroundColor: COLORS.surface },
-          headerTintColor: COLORS.text,
-          headerTitleStyle: { fontWeight: "700" },
-        }}
-      />
-    </Tab.Navigator>
-  );
+    return (
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                headerShown: false,
+                tabBarActiveTintColor: COLORS.primary,
+                tabBarInactiveTintColor: COLORS.secondary,
+                tabBarStyle: {
+                    backgroundColor: COLORS.surface,
+                    borderTopWidth: 1,
+                    borderTopColor: COLORS.border,
+                    height: 60,
+                    paddingBottom: 8,
+                    paddingTop: 4,
+                },
+                tabBarIcon: ({ color, size }) => (
+                    <MaterialIcons
+                        name={TAB_ICONS[route.name] || "circle"}
+                        size={size}
+                        color={color}
+                    />
+                ),
+            })}
+        >
+            <Tab.Screen
+                name="Inicio"
+                component={HomeStack}
+                options={{ title: "Inicio" }}
+            />
+            <Tab.Screen
+                name="Favorites"
+                component={FavoritesStack}
+                options={{ title: "Favoritos" }}
+            />
+            <Tab.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{ title: "Perfil" }}
+            />
+        </Tab.Navigator>
+    );
 };
 
 export default MainTabs;
